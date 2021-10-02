@@ -7,8 +7,13 @@ module Handlebars
 
     def get(path)
       items = path.split('.'.freeze)
-      if locals.key? items.first.to_sym
+      first_symbolized_item = items.first.to_sym
+
+      if locals.key?(first_symbolized_item)
         current = locals
+      elsif first_symbolized_item == :@root
+        current = @data
+        items.shift
       else
         current = @data
       end

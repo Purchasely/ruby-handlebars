@@ -71,7 +71,7 @@ describe Handlebars::Handlebars do
         hbs.register_partial('brackets', "[{{name}}]")
         expect(evaluate("Hello {{> brackets}}", {name: 'world'})).to eq("Hello [world]")
       end
-      
+
       it 'with a string argument' do
         hbs.register_partial('with_args', "[{{name}}]")
         expect(evaluate("Hello {{> with_args name='jon'}}")).to eq("Hello [jon]")
@@ -172,6 +172,11 @@ describe Handlebars::Handlebars do
       it 'block parameters can be paths' do
         data = {company: {people: ['a', 'b', 'c']}}
         expect(evaluate("{{#each company.people}}{{{this}}}{{/each}}", data)).to eq('abc')
+      end
+
+      it 'knows how to access root data inside a block thanks to @root keyword' do
+        data = { placeholder: "person", company: {people: ['a', 'b']}}
+        expect(evaluate("{{#each company.people}}{{@root.placeholder}} {{{this}}}{{#unless @last}}, {{/unless}}{{/each}}", data)).to eq('person a, person b')
       end
 
       it 'a else keyword out of a helper will raise an error' do
