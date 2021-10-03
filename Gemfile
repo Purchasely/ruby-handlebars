@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'parslet', '~> 1.6', '>= 1.6.2'
+gem 'parslet'
 
 group :development do
   gem 'pry', '~> 0.10', '>= 0.10.1'
