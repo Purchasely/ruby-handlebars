@@ -5,19 +5,25 @@ module Handlebars
     rule(:space)       { match('\s').repeat(1) }
     rule(:space?)      { space.maybe }
     rule(:dot)         { str('.') }
-    rule(:gt)          { str('>')}
-    rule(:hash)        { str('#')}
-    rule(:slash)       { str('/')}
-    rule(:ocurly)      { str('{')}
-    rule(:ccurly)      { str('}')}
-    rule(:pipe)        { str('|')}
-    rule(:eq)          { str('=')}
+    rule(:gt)          { str('>') }
+    rule(:hash)        { str('#') }
+    rule(:slash)       { str('/') }
+    rule(:ocurly)      { str('{') }
+    rule(:ccurly)      { str('}') }
+    rule(:pipe)        { str('|') }
+    rule(:eq)          { str('=') }
+    rule(:excl_mark)   { str('!') }
+    rule(:dash)        { str('-') }
 
 
     rule(:docurly)     { ocurly >> ocurly }
     rule(:dccurly)     { ccurly >> ccurly }
     rule(:tocurly)     { ocurly >> ocurly >> ocurly }
     rule(:tccurly)     { ccurly >> ccurly >> ccurly }
+    rule(:cocurly)     { docurly >> excl_mark }
+    rule(:mcocurly)    { cocurly >> ddash }
+    rule(:mcccurly)    { ddash >> dccurly }
+    rule(:ddash)       { dash >> dash }
 
     rule(:else_kw)     { str('else') }
     rule(:as_kw)       { str('as') }
@@ -28,6 +34,17 @@ module Handlebars
 
     rule(:nocurly)     { match('[^{}]') }
     rule(:eof)         { any.absent? }
+
+    rule(:comment) { mustache_comment | simple_comment }
+
+    rule(:simple_comment) do
+      cocurly >> (dccurly.absent? >> any).repeat >> dccurly >> match('\s').repeat
+    end
+
+    rule(:mustache_comment) do
+      mcocurly >> (mcccurly.absent? >> any).repeat >> mcccurly >> match('\s').repeat
+    end
+
     rule(:template_content) {
       (
         nocurly.repeat(1) | # A sequence of non-curlies
@@ -108,7 +125,7 @@ module Handlebars
       dccurly
     }
 
-    rule(:block_item) { (template_content | unsafe_replacement | safe_replacement | helper | partial | block_helper | as_block_helper) }
+    rule(:block_item) { (template_content | unsafe_replacement | safe_replacement | helper | partial | block_helper | as_block_helper | comment) }
     rule(:block) { block_item.repeat.as(:block_items) }
 
     root :block

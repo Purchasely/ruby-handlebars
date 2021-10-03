@@ -51,6 +51,34 @@ describe Handlebars::Handlebars do
       expect(evaluate('Hello {{first-name}}', double("first-name": 'world'))).to eq('Hello world')
     end
 
+    it 'handles simple comments' do
+      template = [
+        "<pre>This is {{! A COMMENT",
+        "THAT SPAWNS MULTIPLE LINES }}",
+        "a test</pre>",
+        "<p>And a line</p>{{! ANOTHER {{ COMMENT AT THE END }}"
+      ].join("\n")
+
+      expect(evaluate(template)).to eq([
+        "<pre>This is a test</pre>",
+        "<p>And a line</p>"
+      ].join("\n"))
+    end
+
+    it 'handles mustache comments' do
+      template = [
+        "<pre>This is {{!-- A }} COMMENT",
+        "THAT SPAWNS }} MULTIPLE LINES --}}",
+        "a test</pre>",
+        "<p>And a line</p>{{!-- ANOTHER {{SHOULD BE IGNORED}} COMMENT AT THE END --}}"
+      ].join("\n")
+
+      expect(evaluate(template)).to eq([
+        "<pre>This is a test</pre>",
+        "<p>And a line</p>"
+      ].join("\n"))
+    end
+
     context 'partials' do
       it 'simple' do
         hbs.register_partial('plic', "Plic")
