@@ -28,6 +28,12 @@ module Handlebars
       end
     end
 
+    class Number < TreeItem.new(:content)
+      def _eval(context)
+        content.to_s.index('.') ? content.to_f : content.to_i
+      end
+    end
+
     class String < TreeItem.new(:content)
       def _eval(context)
         return content
@@ -80,7 +86,7 @@ module Handlebars
 
     class PartialWithArgs < TreeItem.new(:partial_name, :arguments)
       def _eval(context)
-        [arguments].flatten.map(&:values).map do |vals| 
+        [arguments].flatten.map(&:values).map do |vals|
           context.add_item vals.first.to_s, vals.last._eval(context)
         end
         context.get_partial(partial_name.to_s).call_with_context(context)
@@ -104,6 +110,7 @@ module Handlebars
     rule(template_content: simple(:content)) {Tree::TemplateContent.new(content)}
     rule(replaced_unsafe_item: simple(:item)) {Tree::EscapedReplacement.new(item)}
     rule(replaced_safe_item: simple(:item)) {Tree::Replacement.new(item)}
+    rule(number: simple(:content))      {Tree::Number.new(content)}
     rule(str_content: simple(:content)) {Tree::String.new(content)}
     rule(parameter_name: simple(:name)) {Tree::Parameter.new(name)}
 
@@ -171,7 +178,7 @@ module Handlebars
     ) {
       Tree::AsHelper.new(name, parameters, as_parameters, block_items, else_block_items)
     }
-    
+
     rule(
       partial_name: simple(:partial_name),
       arguments: subtree(:arguments)

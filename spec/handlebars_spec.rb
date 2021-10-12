@@ -141,6 +141,21 @@ describe Handlebars::Handlebars do
         expect(evaluate("{{{add left '&' right}}}", {left: 'Law', right: 'Order'})).to eq("Law & Order")
       end
 
+      it 'with multiple arguments, including numbers' do
+        hbs.register_helper('repeat') do |context, object, times|
+          object * times
+        end
+
+        expect(
+          evaluate(
+            "{{#each (repeat elements 2)}}{{this.val}}{{/each}}",
+            {
+              elements: [{ val: 1 }, { val: 2 }, { val: 3 }]
+            }
+          )
+        ).to eq('123123')
+      end
+
       it 'with an empty string argument' do
         hbs.register_helper('noah') {|context, value| value.to_s.gsub(/a/, '')}
 
@@ -154,6 +169,7 @@ describe Handlebars::Handlebars do
         expect(evaluate('{{wrap_dashes (wrap_parens "hello")}}', {})).to eq("-(hello)-")
         expect(evaluate('{{wrap_dashes (wrap_parens world)}}', {world: "world"})).to eq("-(world)-")
       end
+
 
       it 'block' do
         hbs.register_helper('comment') do |context, commenter, block|

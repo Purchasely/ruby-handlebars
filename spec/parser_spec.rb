@@ -140,6 +140,20 @@ describe Handlebars::Parser do
         })
       end
 
+      it 'with a number parameter' do
+        expect(parser.parse('{{ chunk a.b.c 2 }}')).to eq({
+          block_items: [
+            {
+              unsafe_helper_name: 'chunk',
+              parameters:[
+                { parameter_name: 'a.b.c' },
+                { number: '2' }
+              ]
+            }
+          ]
+        })
+      end
+
       it 'with multiple parameters' do
         expect(parser.parse('{{ concat plic ploc plouf }}')).to eq({
           block_items: [

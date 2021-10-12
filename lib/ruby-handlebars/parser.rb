@@ -14,7 +14,19 @@ module Handlebars
     rule(:eq)          { str('=') }
     rule(:excl_mark)   { str('!') }
     rule(:dash)        { str('-') }
+    rule(:digit)       { match('[0-9]') }
 
+    rule(:number) {
+      (
+        str('-').maybe >> (
+          str('0') | (match('[1-9]') >> digit.repeat)
+        ) >> (
+          str('.') >> digit.repeat(1)
+        ).maybe >> (
+          match('[eE]') >> (str('+') | str('-')).maybe >> digit.repeat(1)
+        ).maybe
+      ).as(:number)
+    }
 
     rule(:docurly)     { ocurly >> ocurly }
     rule(:dccurly)     { ccurly >> ccurly }
@@ -63,6 +75,7 @@ module Handlebars
     rule(:parameter)   {
       (as_kw >> space? >> pipe).absent? >>
       (
+        number |
         (path | string).as(:parameter_name) |
         (str('(') >> space? >> identifier.as(:safe_helper_name) >> (space? >> parameters.as(:parameters)).maybe >> space? >> str(')'))
       )
