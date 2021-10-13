@@ -307,6 +307,20 @@ describe Handlebars::Parser do
         })
       end
 
+      it 'with a argument-less helper' do
+        expect(parser.parse('{{#if (truthy)}}show something{{/if}}')).to eq({
+          block_items: [
+            {
+              helper_name: 'if',
+              parameters: { safe_helper_name: 'truthy' },
+              block_items: [
+                { template_content: 'show something' }
+              ]
+            }
+          ]
+        })
+      end
+
       it 'with an else statement' do
         expect(parser.parse('{{#if something}}Ok{{else}}not ok{{/if}}')).to eq({
           block_items: [

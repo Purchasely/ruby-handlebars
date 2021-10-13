@@ -121,6 +121,8 @@ module Handlebars
       Tree::EscapedHelper.new(name, parameters)
     }
 
+    rule(safe_helper_name: simple(:name)) { Tree::Helper.new(name, []) }
+
     rule(
       safe_helper_name: simple(:name),
       parameters: subtree(:parameters)

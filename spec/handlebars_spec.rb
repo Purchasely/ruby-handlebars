@@ -128,6 +128,11 @@ describe Handlebars::Handlebars do
         expect(evaluate("{{rainbow}}")).to eq("-")
       end
 
+      it 'without any argument used in a "if" context' do
+        hbs.register_helper('truthy') { true }
+        expect(evaluate("{{#if (truthy)}}yay{{else}}nay{{/if}}")).to eq("yay")
+      end
+
       it 'with a single argument' do
         hbs.register_helper('noah') {|context, value| value.gsub(/a/, '')}
 
