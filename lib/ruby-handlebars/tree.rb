@@ -36,7 +36,7 @@ module Handlebars
 
     class String < TreeItem.new(:content)
       def _eval(context)
-        return content
+        content.to_s
       end
     end
 
