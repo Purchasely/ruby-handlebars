@@ -24,7 +24,7 @@ module Handlebars
 
     class EscapedReplacement < Replacement
       def _eval(context)
-        context.escaper.escape(super(context).to_s)
+        context.escaper.escape(super(context))
       end
     end
 
@@ -74,7 +74,7 @@ module Handlebars
 
     class EscapedHelper < Helper
       def _eval(context)
-        context.escaper.escape(super(context).to_s)
+        context.escaper.escape(super(context))
       end
     end
 
